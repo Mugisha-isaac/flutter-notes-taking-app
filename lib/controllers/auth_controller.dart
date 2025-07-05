@@ -1,7 +1,6 @@
 import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:get_storage/get_storage.dart';
 import '../model/user.dart' as app_user;
 
 class AuthController extends GetxController {
@@ -9,7 +8,6 @@ class AuthController extends GetxController {
 
   final firebase_auth.FirebaseAuth _auth = firebase_auth.FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final _box = GetStorage();
 
   final Rx<app_user.User?> _user = Rx<app_user.User?>(null);
   final RxBool _isLoading = false.obs;
