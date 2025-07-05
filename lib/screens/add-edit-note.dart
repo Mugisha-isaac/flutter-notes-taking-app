@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:notes_taking_app/controllers/note.dart';
+import 'package:notes_taking_app/controllers/note_controller.dart';
 import 'package:notes_taking_app/model/note.dart';
 
 class AddEditNotePage extends StatefulWidget {

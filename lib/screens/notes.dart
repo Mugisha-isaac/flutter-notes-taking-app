@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:notes_taking_app/controllers/auth_controller.dart';
-import 'package:notes_taking_app/controllers/note.dart';
+import 'package:notes_taking_app/controllers/note_controller.dart';
 import 'package:notes_taking_app/model/note.dart';
 import 'package:notes_taking_app/screens/add-edit-note.dart';
 
@@ -152,7 +152,7 @@ class NotesPage extends StatelessWidget {
                         Text(
                           notesController.searchQuery.isNotEmpty
                               ? 'No notes found for "${notesController.searchQuery}"'
-                              : 'No notes yet. Start creating your first note!',
+                              : 'Nothing here yet—tap ➕ to add a note.',
                           style: TextStyle(
                             fontSize: 16,
                             color: Colors.grey[600],
@@ -165,7 +165,7 @@ class NotesPage extends StatelessWidget {
                 }
 
                 return RefreshIndicator(
-                  onRefresh: notesController.loadNotes,
+                  onRefresh: notesController.fetchNotes,
                   child: ListView.builder(
                     padding: const EdgeInsets.all(16.0),
                     itemCount: notesController.filteredNotes.length,
