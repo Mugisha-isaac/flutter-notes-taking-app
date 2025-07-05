@@ -43,3 +43,37 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Firebase sensitive files
+firebase_options.dart
+google-services.json
+GoogleService-Info.plist
+.firebaserc
+firebase-debug.log
+firebase-debug.*.log
+
+# Environment files
+.env
+.env.local
+.env.development
+.env.production
+
+# API keys and secrets
+**/secrets/
+**/*.key
+**/*.pem
+**/*.p12
+**/*.keystore
+**/*.jks
+
+# Local storage
+storage.sqlite
+storage.sqlite3
+
+# Test coverage
+coverage/
+lcov.info
+
+# Debug logs
+pglite-debug.log
+*.log
