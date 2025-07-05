@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
+import 'package:logger/logger.dart';
 import 'package:notes_taking_app/model/user.dart' as app_user;
 
 class AuthController extends GetxController {
@@ -9,7 +9,7 @@ class AuthController extends GetxController {
 
   final firebase_auth.FirebaseAuth _auth = firebase_auth.FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final _box = GetStorage();
+  final Logger _logger = Logger();
 
   final Rx<firebase_auth.User?> _firebaseUser = Rx<firebase_auth.User?>(null);
   final RxBool _isLoading = false.obs;
@@ -39,12 +39,18 @@ class AuthController extends GetxController {
 
   Future<void> _loadUserData(String uid) async {
     try {
+      _logger.i('Loading user data for UID: $uid');
       final doc = await _firestore.collection('users').doc(uid).get();
       if (doc.exists) {
+        _logger.i('User document found: ${doc.data()}');
         _appUser.value = app_user.User.fromJson(doc.data()!);
+        _logger.i('User loaded successfully: ${_appUser.value}');
         Get.offAllNamed('/notes');
+      } else {
+        _logger.w('No user document found for UID: $uid');
       }
     } catch (e) {
+      _logger.e('Error loading user data: $e');
       Get.snackbar('Error', 'Failed to load user data');
     }
   }
@@ -52,6 +58,7 @@ class AuthController extends GetxController {
   Future<void> register(String name, String email, String password) async {
     try {
       _isLoading.value = true;
+      _logger.i('Starting registration for: $email');
 
       // Validation
       if (name.isEmpty || email.isEmpty || password.isEmpty) {
@@ -70,16 +77,25 @@ class AuthController extends GetxController {
       }
 
       // Create Firebase user
+      _logger.i('Creating Firebase user...');
       final credential = await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
 
+      _logger.i('fire base credential created successfully!');
+      _logger.d('Credential: $credential');
+
       if (credential.user != null) {
+        _logger.i('Firebase user created successfully!');
+        _logger.d('User ID: ${credential.user!.uid}');
+
         // Update display name
         await credential.user!.updateDisplayName(name);
+        _logger.d('Display name updated to: $name');
 
         // Create user document in Firestore
+        _logger.i('Creating User object...');
         final newUser = app_user.User(
           id: credential.user!.uid,
           name: name,
@@ -88,15 +104,35 @@ class AuthController extends GetxController {
           updatedAt: DateTime.now(),
         );
 
+        _logger.d('User object created: $newUser');
+
+        // Log the JSON conversion
+        _logger.i('Converting to JSON...');
+        final userJson = newUser.toJson();
+        _logger.d('User JSON: $userJson');
+
+        // Log each field in the JSON
+        _logger.d('JSON Fields:');
+        userJson.forEach((key, value) {
+          _logger.d('  $key: $value (${value.runtimeType})');
+        });
+
+        // Try to save to Firestore
+        _logger.i('Saving to Firestore...');
         await _firestore
             .collection('users')
             .doc(credential.user!.uid)
-            .set(newUser.toJson());
+            .set(userJson);
 
+        _logger.i('Successfully saved to Firestore!');
         _appUser.value = newUser;
+        _logger.d('App user set: ${_appUser.value}');
         Get.snackbar('Success', 'Registration successful!');
+      } else {
+        _logger.w('Firebase credential user is null');
       }
     } on firebase_auth.FirebaseAuthException catch (e) {
+      _logger.e('Firebase Auth Exception: ${e.code} - ${e.message}');
       String errorMessage = 'Registration failed';
 
       switch (e.code) {
@@ -115,15 +151,19 @@ class AuthController extends GetxController {
 
       Get.snackbar('Error', errorMessage);
     } catch (e) {
+      _logger.e('General Exception: $e');
+      _logger.e('Exception type: ${e.runtimeType}');
       Get.snackbar('Error', 'Registration failed: ${e.toString()}');
     } finally {
       _isLoading.value = false;
+      _logger.i('Registration process completed');
     }
   }
 
   Future<void> login(String email, String password) async {
     try {
       _isLoading.value = true;
+      _logger.i('Starting login for: $email');
 
       // Validation
       if (email.isEmpty || password.isEmpty) {
@@ -137,10 +177,15 @@ class AuthController extends GetxController {
       }
 
       // Sign in with Firebase
+      _logger.i('Signing in with Firebase...');
       await _auth.signInWithEmailAndPassword(email: email, password: password);
 
+      _logger.i('Login successful!');
       Get.snackbar('Success', 'Login successful!');
     } on firebase_auth.FirebaseAuthException catch (e) {
+      _logger.e(
+        'Firebase Auth Exception during login: ${e.code} - ${e.message}',
+      );
       String errorMessage = 'Login failed';
 
       switch (e.code) {
@@ -165,6 +210,7 @@ class AuthController extends GetxController {
 
       Get.snackbar('Error', errorMessage);
     } catch (e) {
+      _logger.e('General Exception during login: $e');
       Get.snackbar('Error', 'Login failed: ${e.toString()}');
     } finally {
       _isLoading.value = false;
@@ -173,16 +219,20 @@ class AuthController extends GetxController {
 
   Future<void> logout() async {
     try {
+      _logger.i('Logging out...');
       await _auth.signOut();
       _appUser.value = null;
+      _logger.i('Logout successful');
       Get.snackbar('Success', 'Logged out successfully');
     } catch (e) {
+      _logger.e('Logout error: $e');
       Get.snackbar('Error', 'Logout failed: ${e.toString()}');
     }
   }
 
   Future<void> resetPassword(String email) async {
     try {
+      _logger.i('Resetting password for: $email');
       if (email.isEmpty) {
         Get.snackbar('Error', 'Please enter your email');
         return;
@@ -194,8 +244,10 @@ class AuthController extends GetxController {
       }
 
       await _auth.sendPasswordResetEmail(email: email);
+      _logger.i('Password reset email sent');
       Get.snackbar('Success', 'Password reset email sent!');
     } on firebase_auth.FirebaseAuthException catch (e) {
+      _logger.e('Password reset error: ${e.code} - ${e.message}');
       String errorMessage = 'Password reset failed';
 
       switch (e.code) {
@@ -211,6 +263,7 @@ class AuthController extends GetxController {
 
       Get.snackbar('Error', errorMessage);
     } catch (e) {
+      _logger.e('General password reset error: $e');
       Get.snackbar('Error', 'Password reset failed: ${e.toString()}');
     }
   }

@@ -1,4 +1,4 @@
-import 'package:notes_taking_app/model/user.dart' as firebase_auth;
+import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 
 class User {
   String id;
