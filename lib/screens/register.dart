@@ -35,7 +35,7 @@ class RegisterPage extends StatelessWidget {
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter your name';
+                    return 'Please enter your fullnames';
                   }
                   return null;
                 },
