@@ -6,15 +6,12 @@ import 'package:notes_taking_app/controllers/auth_controller.dart';
 import 'package:notes_taking_app/screens/login.dart';
 import 'package:notes_taking_app/screens/notes.dart';
 import 'package:notes_taking_app/screens/register.dart';
+import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize Firebase
-  await Firebase.initializeApp();
-
-  // Initialize GetStorage
-  await GetStorage.init();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   runApp(const MyApp());
 }
