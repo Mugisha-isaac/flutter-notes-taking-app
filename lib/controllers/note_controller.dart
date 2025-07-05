@@ -32,13 +32,13 @@ class NotesController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    loadNotes();
+    fetchNotes();
     ever(_searchQuery, (_) => _filterNotes());
     ever(_selectedCategory, (_) => _filterNotes());
   }
 
   // Load notes from Firestore
-  Future<void> loadNotes() async {
+  Future<void> fetchNotes() async {
     try {
       _isLoading.value = true;
 
