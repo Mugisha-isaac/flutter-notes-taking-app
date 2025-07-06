@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:notes_taking_app/controllers/auth_controller.dart';
 import 'package:notes_taking_app/controllers/note_controller.dart';
-import 'package:notes_taking_app/screens/add-edit-note.dart';
+import 'package:notes_taking_app/screens/add_edit_note.dart';
 import 'package:notes_taking_app/screens/login.dart';
 import 'package:notes_taking_app/screens/notes.dart';
 import 'package:notes_taking_app/screens/register.dart';

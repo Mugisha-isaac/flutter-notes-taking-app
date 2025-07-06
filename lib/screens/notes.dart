@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:notes_taking_app/controllers/auth_controller.dart';
 import 'package:notes_taking_app/controllers/note_controller.dart';
 import 'package:notes_taking_app/model/note.dart';
-import 'package:notes_taking_app/screens/add-edit-note.dart';
+import 'package:notes_taking_app/screens/add_edit_note.dart';
 
 class NotesPage extends StatelessWidget {
   const NotesPage({super.key});
@@ -287,7 +287,7 @@ class NotesPage extends StatelessWidget {
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: Colors.blue.withOpacity(0.1),
+                      color: Colors.blue.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
@@ -313,7 +313,7 @@ class NotesPage extends StatelessWidget {
                         vertical: 2,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.grey.withOpacity(0.1),
+                        color: Colors.grey.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
